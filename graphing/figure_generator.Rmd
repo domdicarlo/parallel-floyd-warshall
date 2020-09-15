@@ -1,0 +1,574 @@
+---
+title: "Parallel Floyd Warshall Implementation Performance Metrics"
+author: "Dominic DiCarlo"
+date: "April 21, 2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r }
+
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+
+```
+
+```{r cars}
+
+
+
+parallel_t_1 <- read_delim('../experiments/parallel_test_1', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_2 <- read_delim('../experiments/parallel_test_2', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_4 <- read_delim('../experiments/parallel_test_4', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_8 <- read_delim('../experiments/parallel_test_8', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_16 <- read_delim('../experiments/parallel_test_16', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_32 <- read_delim('../experiments/parallel_test_32', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+parallel_t_64 <- read_delim('../experiments/parallel_test_64', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_1 <- read_delim('../experiments/serial_test_1', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_2 <- read_delim('../experiments/serial_test_2', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_4 <- read_delim('../experiments/serial_test_4', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_8 <- read_delim('../experiments/serial_test_8', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_16 <- read_delim('../experiments/serial_test_16', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_32 <- read_delim('../experiments/serial_test_32', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+serial_t_64 <- read_delim('../experiments/serial_test_64', " ", quote = "\"", escape_backslash = FALSE,
+  escape_double = TRUE, col_names = FALSE, col_types = NULL,
+  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+  comment = "", trim_ws = FALSE, skip = 0, 
+ progress = show_progress(),
+  skip_empty_rows = TRUE)
+
+```
+```{r}
+
+# rename(parallel_t_1, 
+parallel_t_1 <- parallel_t_1 %>%
+   mutate(num_threads = 1) %>%
+   mutate(type = 'Parallel')
+
+parallel_t_2 <- parallel_t_2 %>%
+   mutate(num_threads = 2)%>%
+   mutate(type = 'Parallel')
+
+parallel_t_4 <- parallel_t_4 %>%
+   mutate(num_threads = 4)%>%
+   mutate(type = 'Parallel')
+
+parallel_t_8 <- parallel_t_8 %>%
+   mutate(num_threads = 8)%>%
+   mutate(type = 'Parallel')
+
+parallel_t_16 <- parallel_t_16 %>%
+   mutate(num_threads = 16)%>%
+   mutate(type = 'Parallel')
+
+parallel_t_32 <- parallel_t_32 %>%
+   mutate(num_threads = 32)%>%
+   mutate(type = 'Parallel')
+
+parallel_t_64 <- parallel_t_64 %>%
+   mutate(num_threads = 64)%>%
+   mutate(type = 'Parallel')
+
+serial_t_1 <- serial_t_1 %>%
+   mutate(num_threads = 1)%>%
+   mutate(type = 'Serial')
+
+serial_t_2 <- serial_t_2 %>%
+   mutate(num_threads = 2)%>%
+   mutate(type = 'Serial')
+
+serial_t_4 <- serial_t_4 %>%
+   mutate(num_threads = 4)%>%
+   mutate(type = 'Serial')
+
+serial_t_8 <- serial_t_8 %>%
+   mutate(num_threads = 8)%>%
+   mutate(type = 'Serial')
+
+serial_t_16 <- serial_t_16 %>%
+   mutate(num_threads = 16)%>%
+   mutate(type = 'Serial')
+
+serial_t_32 <- serial_t_32 %>%
+   mutate(num_threads = 32)%>%
+   mutate(type = 'Serial')
+
+serial_t_64 <- serial_t_64 %>%
+   mutate(num_threads = 64)%>%
+   mutate(type = 'Serial')
+
+```
+
+
+```{r}
+
+all_data <- inner_join(parallel_t_1, parallel_t_2) %>%
+  full_join(parallel_t_2) %>%
+  full_join(parallel_t_4) %>%
+  full_join(parallel_t_8) %>%
+  full_join(parallel_t_16) %>%
+  full_join(parallel_t_32) %>%
+  full_join(parallel_t_64) %>%
+  full_join(serial_t_2) %>%
+  full_join(serial_t_4) %>%
+  full_join(serial_t_8) %>%
+  full_join(serial_t_16) %>%
+  full_join(serial_t_32) %>%
+  full_join(serial_t_64)
+
+```
+```{r}
+all_data <- all_data %>%
+  rename('2'='X1' )  %>%
+  rename('4'='X2' )  %>%
+  rename('8'='X3' )  %>%
+  rename('16'='X4'  ) %>%
+  rename('32'='X5'  ) %>%
+  rename('64'='X6'  ) %>%
+  rename('128'='X7' ) %>%
+  rename('256'='X8') %>%
+  rename('512'='X9') %>%
+  rename( '1024'='X10' ) 
+
+
+```
+
+```{r}
+
+all_data <- all_data %>%
+  gather(key="Vertex Count", value="Time (Milliseconds)", `2`, `4`, 
+         `8`, `16`, `32`, `64`, `128`, 
+         `256`, `512`, `1024`)
+
+```
+
+```{r}
+all_data <- all_data %>%
+  mutate(`Vertex Count` = as.integer(`Vertex Count`)) %>%
+  mutate(`num_threads` = as.integer(`num_threads`))
+
+```
+
+```{r}
+all_data
+```
+
+
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 2), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "2-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 4), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "4-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 8), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "8-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 16), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "16-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 32), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "32-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+```{r}
+
+ggplot(filter(rename(all_data, "Implementation" = type), num_threads == 64), 
+              aes(`Vertex Count`, `Time (Milliseconds)`, colour = `Implementation`)) + 
+  geom_point(size=3) +
+  labs(title = "Time Performance to Vertex Count",
+         subtitle = "64-Threaded Parallel Implementation",
+         x = "Vertex Count",
+         y = "Time (Milliseconds)"
+        ) 
+
+```
+
+```{r}
+
+write.csv(select(all_data, -`X11`), "data.csv")
+
+```
+
+```{r}
+
+all_data <- all_data %>%
+  spread(`type`, `Time (Milliseconds)`) %>%
+  select(-`X11`)
+
+all_data
+
+```
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 1024) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "1024 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 512) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "512 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 256) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "256 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 128) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "128 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 64) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "64 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 32) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "32 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 16) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "16 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 8) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "8 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 4) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "4 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+```{r}
+
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 2) %>%
+  
+ggplot(aes(num_threads, ratio)) + 
+  geom_point(size=3) +
+  labs(title = "Parallel to Serial Runtime Performance Ratio",
+         subtitle = "2 Vertex Matrix",
+         x = "Thread Count",
+         y = "Parallel / Serial"
+        ) +
+  expand_limits(x = 0, y = 0)
+
+```
+
+
+```{r}
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 1024) %>%
+  write.csv("data_ratios1024.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 512) %>%
+  write.csv("data_ratios512.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 256) %>%
+  write.csv("data_ratios256.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 128) %>%
+  write.csv("data_ratios128.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 64) %>%
+  write.csv("data_ratios64.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 32) %>%
+  write.csv("data_ratios32.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 16) %>%
+  write.csv("data_ratios16.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 8) %>%
+  write.csv("data_ratios8.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 4) %>%
+  write.csv("data_ratios4.csv")
+
+all_data %>%
+  mutate(ratio = Parallel / Serial) %>%
+  filter( `Vertex Count` == 2) %>%
+  write.csv("data_ratios2.csv")
+
+
+```
+

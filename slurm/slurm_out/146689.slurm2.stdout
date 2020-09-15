@@ -1,0 +1,417 @@
+-------------------------
+BEGIN TESTING
+-------------------------
+
+-------------------------
+
+read_in_adjacency_matrix START TESTING
+
+Good format test - Simple all positive ints 4x4: PASSED
+
+Good format test 2 - Simple all positive ints 10x10: PASSED
+
+Good format test 3 - Reading in Infinity char: PASSED
+
+read_in_adjacency_matrix: ERROR. Misformatted input file. Vertex count on first line.
+
+Bad format test 1 - Reject improper vertex count char: PASSED
+
+read_in_adjacency_matrix: ERROR. Misformatted input file. Vertex count on first line.
+
+Bad format test 2 - Reject empty text file: PASSED
+
+read_in_adjacency_matrix: ERROR. Misformatted input file. Not I or a uint.
+
+Bad format test 3 - No matrix: PASSED
+
+edge weight: 2000
+read_in_adjacency_matrix: ERROR. Misformatted input file. Edge > 1000.
+
+Bad format test 4 - One edge over 1000: PASSED
+
+read_in_adjacency_matrix: ERROR. Misformatted input file. Diagonals not equal to 0.
+
+Bad format test 5 - Negative edge length: PASSED
+
+read_in_adjacency_matrix: ERROR. Misformatted input file. Diagonals not equal to 0.
+
+Bad format test 6 - Not all diagonals == 0: PASSED
+
+read_in_adjacency_matrix END TESTING
+
+-------------------------
+
+floyd_warshall_serial START TESTING
+
+Simple testing begin:
+
+Basic matrix test: PASSED
+
+Basic matrix test 2: PASSED
+
+Basic matrix test 3: PASSED
+
+Basic matrix test 4 - Many Infinities: PASSED
+
+Basic matrix test 5 - All 0s: PASSED
+
+Mass testing begin:
+
+Mass testing complete. 10 / 10 tests passed
+
+floyd_warshall_serial END TESTING
+
+-------------------------
+
+floyd_warshall_parallel START TESTING
+
+Simple testing begin:
+
+Basic matrix test - Shortest Paths Already Present: PASSED
+
+Basic matrix test 2 - All positive ints - Threads == Rows: PASSED
+
+Basic matrix test 2 - All positive ints- Threads > Rows: PASSED
+
+Basic matrix test 2 - All positive ints - Threads == Rows - 1: PASSED
+
+Basic matrix test 3 - Infinity used: PASSED
+
+Basic matrix test 4 - Many Infinities: PASSED
+
+Basic matrix test 5 - All 0s: PASSED
+
+Mass testing begin:
+
+Mass testing complete. 10 / 10 tests passed
+
+floyd_warshall_parallel END TESTING
+
+------------------------------------
+
+Onto EXPERIMENTATION
+
+------------------------------------
+
+T = 1, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.001000p
+
+N = 4 Elapsed time: 0.003000p
+
+N = 8 Elapsed time: 0.017000p
+
+N = 16 Elapsed time: 0.112000p
+
+N = 32 Elapsed time: 0.825000p
+
+N = 64 Elapsed time: 6.164000p
+
+N = 128 Elapsed time: 21.349001p
+
+N = 256 Elapsed time: 140.643005p
+
+N = 512 Elapsed time: 1120.849976p
+
+N = 1024 Elapsed time: 8981.126953p
+
+Parallel:
+
+N = 2 Elapsed time: 0.005000p
+
+N = 4 Elapsed time: 0.007000p
+
+N = 8 Elapsed time: 0.024000p
+
+N = 16 Elapsed time: 0.140000p
+
+N = t Elapsed time: 0.997000p
+
+N = 64 Elapsed time: 6.430000p
+
+N = 128 Elapsed time: 24.313999p
+
+N = 256 Elapsed time: 145.901001p
+
+N = 512 Elapsed time: 1176.897949p
+
+N = 1024 Elapsed time: 9326.208984p
+
+T = 2, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.002000p
+
+N = 4 Elapsed time: 0.003000p
+
+N = 8 Elapsed time: 0.017000p
+
+N = 16 Elapsed time: 0.112000p
+
+N = 32 Elapsed time: 0.822000p
+
+N = 64 Elapsed time: 6.192000p
+
+N = 128 Elapsed time: 21.379999p
+
+N = 256 Elapsed time: 140.169998p
+
+N = 512 Elapsed time: 1112.401001p
+
+N = 1024 Elapsed time: 8918.407227p
+
+Parallel:
+
+N = 2 Elapsed time: 0.447000p
+
+N = 4 Elapsed time: 0.250000p
+
+N = 8 Elapsed time: 0.210000p
+
+N = 16 Elapsed time: 0.257000p
+
+N = t Elapsed time: 0.806000p
+
+N = 64 Elapsed time: 4.081000p
+
+N = 128 Elapsed time: 20.101999p
+
+N = 256 Elapsed time: 95.697998p
+
+N = 512 Elapsed time: 611.270020p
+
+N = 1024 Elapsed time: 4776.812012p
+
+T = 4, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.001000p
+
+N = 4 Elapsed time: 0.003000p
+
+N = 8 Elapsed time: 0.017000p
+
+N = 16 Elapsed time: 0.111000p
+
+N = 32 Elapsed time: 0.824000p
+
+N = 64 Elapsed time: 6.178000p
+
+N = 128 Elapsed time: 19.094000p
+
+N = 256 Elapsed time: 140.128006p
+
+N = 512 Elapsed time: 1116.969971p
+
+N = 1024 Elapsed time: 8945.883789p
+
+Parallel:
+
+N = 2 Elapsed time: 0.315000p
+
+N = 4 Elapsed time: 0.430000p
+
+N = 8 Elapsed time: 0.314000p
+
+N = 16 Elapsed time: 0.488000p
+
+N = t Elapsed time: 0.767000p
+
+N = 64 Elapsed time: 2.611000p
+
+N = 128 Elapsed time: 14.584000p
+
+N = 256 Elapsed time: 58.018002p
+
+N = 512 Elapsed time: 336.936005p
+
+N = 1024 Elapsed time: 2488.402100p
+
+T = 8, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.001000p
+
+N = 4 Elapsed time: 0.003000p
+
+N = 8 Elapsed time: 0.016000p
+
+N = 16 Elapsed time: 0.111000p
+
+N = 32 Elapsed time: 0.823000p
+
+N = 64 Elapsed time: 5.002000p
+
+N = 128 Elapsed time: 23.320000p
+
+N = 256 Elapsed time: 140.130005p
+
+N = 512 Elapsed time: 1115.298950p
+
+N = 1024 Elapsed time: 8978.541992p
+
+Parallel:
+
+N = 2 Elapsed time: 0.384000p
+
+N = 4 Elapsed time: 0.439000p
+
+N = 8 Elapsed time: 0.874000p
+
+N = 16 Elapsed time: 0.849000p
+
+N = t Elapsed time: 1.525000p
+
+N = 64 Elapsed time: 2.514000p
+
+N = 128 Elapsed time: 8.806000p
+
+N = 256 Elapsed time: 32.699001p
+
+N = 512 Elapsed time: 214.981995p
+
+N = 1024 Elapsed time: 1605.484985p
+
+T = 16, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.001000p
+
+N = 4 Elapsed time: 0.003000p
+
+N = 8 Elapsed time: 0.017000p
+
+N = 16 Elapsed time: 0.112000p
+
+N = 32 Elapsed time: 0.826000p
+
+N = 64 Elapsed time: 3.924000p
+
+N = 128 Elapsed time: 20.493000p
+
+N = 256 Elapsed time: 140.406006p
+
+N = 512 Elapsed time: 1115.329956p
+
+N = 1024 Elapsed time: 8965.051758p
+
+Parallel:
+
+N = 2 Elapsed time: 0.409000p
+
+N = 4 Elapsed time: 0.439000p
+
+N = 8 Elapsed time: 0.891000p
+
+N = 16 Elapsed time: 1.535000p
+
+N = t Elapsed time: 2.994000p
+
+N = 64 Elapsed time: 5.590000p
+
+N = 128 Elapsed time: 9.913000p
+
+N = 256 Elapsed time: 27.565001p
+
+N = 512 Elapsed time: 138.873993p
+
+N = 1024 Elapsed time: 839.476013p
+
+T = 32, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.001000p
+
+N = 4 Elapsed time: 0.002000p
+
+N = 8 Elapsed time: 0.017000p
+
+N = 16 Elapsed time: 0.071000p
+
+N = 32 Elapsed time: 0.427000p
+
+N = 64 Elapsed time: 4.088000p
+
+N = 128 Elapsed time: 23.624001p
+
+N = 256 Elapsed time: 140.317001p
+
+N = 512 Elapsed time: 1120.562988p
+
+N = 1024 Elapsed time: 8960.419922p
+
+Parallel:
+
+N = 2 Elapsed time: 0.245000p
+
+N = 4 Elapsed time: 0.386000p
+
+N = 8 Elapsed time: 0.825000p
+
+N = 16 Elapsed time: 1.731000p
+
+N = t Elapsed time: 3.860000p
+
+N = 64 Elapsed time: 6.059000p
+
+N = 128 Elapsed time: 15.677000p
+
+N = 256 Elapsed time: 34.679001p
+
+N = 512 Elapsed time: 146.707993p
+
+N = 1024 Elapsed time: 902.077026p
+
+T = 64, N = 2, 4, 6, 8 , 16, 32, 64, 128, 256, 512, 1024
+
+Serial:
+
+N = 2 Elapsed time: 0.000000p
+
+N = 4 Elapsed time: 0.001000p
+
+N = 8 Elapsed time: 0.007000p
+
+N = 16 Elapsed time: 0.046000p
+
+N = 32 Elapsed time: 0.339000p
+
+N = 64 Elapsed time: 2.266000p
+
+N = 128 Elapsed time: 21.757000p
+
+N = 256 Elapsed time: 140.279007p
+
+N = 512 Elapsed time: 1113.199951p
+
+N = 1024 Elapsed time: 8936.609375p
+
+Parallel:
+
+N = 2 Elapsed time: 0.298000p
+
+N = 4 Elapsed time: 0.421000p
+
+N = 8 Elapsed time: 0.542000p
+
+N = 16 Elapsed time: 1.495000p
+
+N = t Elapsed time: 3.548000p
+
+N = 64 Elapsed time: 9.932000p
+
+N = 128 Elapsed time: 26.872999p
+
+N = 256 Elapsed time: 54.867001p
+
+N = 512 Elapsed time: 231.781998p
+
+N = 1024 Elapsed time: 1099.843018p
+
